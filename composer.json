@@ -1,9 +1,9 @@
 {
-    "name": "robmorgan/phinx",
+    "name": "grlf/phinx",
     "type": "library",
-    "description": "Phinx makes it ridiculously easy to manage the database migrations for your PHP app.",
+    "description": "Using phinx to manage cms.",
     "keywords": ["phinx", "migrations", "database", "db", "database migrations"],
-    "homepage": "https://phinx.org",
+    "homepage": "https://github.com/grlf/phinx",
     "license": "MIT",
     "authors": [{
         "name": "Rob Morgan",
@@ -18,6 +18,10 @@
     }, {
         "name": "Richard Quadling",
         "email": "rquadling@gmail.com",
+        "role": "Developer"
+    }, {
+        "name": "Matt Scott",
+        "email": "matt@greenleafmedia.com",
         "role": "Developer"
     }],
     "require": {
