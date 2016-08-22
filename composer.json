@@ -1,5 +1,5 @@
 {
-    "name": "grlf/phinx",
+    "name": "greenleaf/phinx",
     "type": "library",
     "description": "Using phinx to manage cms.",
     "keywords": ["phinx", "migrations", "database", "db", "database migrations"],
