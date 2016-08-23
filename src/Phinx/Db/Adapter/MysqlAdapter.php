@@ -331,6 +331,17 @@ class MysqlAdapter extends PdoAdapter implements AdapterInterface
     /**
      * {@inheritdoc}
      */
+    public function truncateTable($tableName)
+    {
+        $this->startCommandTimer();
+        $this->writeCommand('truncateTable', array($tableName));
+        $this->execute(sprintf('TRUNCATE TABLE %s', $this->quoteTableName($tableName)));
+        $this->endCommandTimer();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getColumns($tableName)
     {
         $columns = array();

@@ -178,6 +178,16 @@ class Table
     }
 
     /**
+     * Truncates the database table.
+     *
+     * @return void
+     */
+    public function truncate()
+    {
+        $this->getAdapter()->truncateTable($this->getName());
+    }
+
+    /**
      * Renames the database table.
      *
      * @param string $newTableName New Table Name

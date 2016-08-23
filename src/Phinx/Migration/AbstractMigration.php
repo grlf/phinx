@@ -270,4 +270,15 @@ abstract class AbstractMigration implements MigrationInterface
     {
         $this->table($tableName)->drop();
     }
+
+    /**
+     * A short-hand method to truncate the given database table.
+     *
+     * @param string $tableName Table Name
+     * @return void
+     */
+    public function truncateTable($tableName)
+    {
+        $this->table($tableName)->truncate();
+    }
 }
