@@ -30,6 +30,7 @@ namespace Phinx\Seed;
 
 use Phinx\Db\Table;
 use Phinx\Db\Adapter\AdapterInterface;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -61,18 +62,27 @@ abstract class AbstractSeed implements SeedInterface
     protected $output;
 
     /**
+     * @var QuestionHelper
+     */
+    protected $question_helper;
+
+    /**
      * Class Constructor.
      *
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @param QuestionHelper $question_helper
      */
-    final public function __construct(InputInterface $input = null, OutputInterface $output = null)
+    final public function __construct(InputInterface $input = null, OutputInterface $output = null, QuestionHelper $question_helper = null)
     {
         if (!is_null($input)){
             $this->setInput($input);
         }
         if (!is_null($output)){
             $this->setOutput($output);
+        }
+        if (!is_null($question_helper)){
+            $this->setQuestionHelper($question_helper);
         }
         
         $this->init();
@@ -143,6 +153,23 @@ abstract class AbstractSeed implements SeedInterface
     public function getOutput()
     {
         return $this->output;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setQuestionHelper(QuestionHelper $question_helper)
+    {
+        $this->question_helper = $question_helper;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getQuestionHelper()
+    {
+        return $this->question_helper;
     }
 
     /**

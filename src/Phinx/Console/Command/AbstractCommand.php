@@ -268,7 +268,9 @@ abstract class AbstractCommand extends Command
     protected function loadManager(InputInterface $input, OutputInterface $output)
     {
         if (null === $this->getManager()) {
-            $manager = new Manager($this->getConfig(), $input, $output);
+            $question_helper = $this->getHelper('question');
+
+            $manager = new Manager($this->getConfig(), $input, $output, $question_helper);
             $this->setManager($manager);
         }
     }
