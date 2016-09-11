@@ -28,7 +28,6 @@
  */
 namespace Phinx\Migration;
 
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Phinx\Config\ConfigInterface;
@@ -53,11 +52,6 @@ class Manager
      * @var OutputInterface
      */
     protected $output;
-
-    /**
-     * @var QuestionHelper
-     */
-    protected $question_helper;
 
     /**
      * @var array
@@ -90,14 +84,12 @@ class Manager
      * @param ConfigInterface $config Configuration Object
      * @param InputInterface $input Console Input
      * @param OutputInterface $output Console Output
-     * @param QuestionHelper $question_helper
      */
-    public function __construct(ConfigInterface $config, InputInterface $input, OutputInterface $output, QuestionHelper $question_helper)
+    public function __construct(ConfigInterface $config, InputInterface $input, OutputInterface $output)
     {
         $this->setConfig($config);
         $this->setInput($input);
         $this->setOutput($output);
-        $this->setQuestionHelper($question_helper);
     }
 
     /**
@@ -547,27 +539,6 @@ class Manager
     }
 
     /**
-     * Sets the console question helper.
-     *
-     * @param QuestionHelper $question_helper
-     * @return Manager
-     */
-    public function setQuestionHelper(QuestionHelper $question_helper)
-    {
-        $this->question_helper = $question_helper;
-        return $this;
-    }
-
-    /**
-     * Gets the console question helper.
-     *
-     */
-    public function getQuestionHelper()
-    {
-        return $this->question_helper;
-    }
-
-    /**
      * Sets the database migrations.
      *
      * @param array $migrations Migrations
@@ -697,7 +668,7 @@ class Manager
                     }
 
                     // instantiate it
-                    $seed = new $class($this->getInput(), $this->getOutput(), $this->getQuestionHelper());
+                    $seed = new $class($this->getInput(), $this->getOutput());
 
                     if (!($seed instanceof AbstractSeed)) {
                         throw new \InvalidArgumentException(sprintf(
