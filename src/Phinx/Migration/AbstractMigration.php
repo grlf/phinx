@@ -66,6 +66,11 @@ abstract class AbstractMigration implements MigrationInterface
     protected $input;
 
     /**
+     * @var array
+     */
+    protected $notifications;
+
+    /**
      * Class Constructor.
      *
      * @param int $version Migration Version
@@ -75,10 +80,12 @@ abstract class AbstractMigration implements MigrationInterface
     final public function __construct($version, InputInterface $input = null, OutputInterface $output = null)
     {
         $this->version = $version;
-        if (!is_null($input)){
+        $this->notifications = array();
+
+        if (!is_null($input)) {
             $this->setInput($input);
         }
-        if (!is_null($output)){
+        if (!is_null($output)) {
             $this->setOutput($output);
         }
 
@@ -280,5 +287,24 @@ abstract class AbstractMigration implements MigrationInterface
     public function truncateTable($tableName)
     {
         $this->table($tableName)->truncate();
+    }
+
+    /**
+     * A method to allow you to list out seeds to be run after migrations
+     *
+     * @param strng $seederName Name of seeder
+     * @return void
+     */
+    public function seedNotify($seederName)
+    {
+        $this->notifications['seeds'][] = $seederName;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNotifications()
+    {
+        return $this->notifications;
     }
 }

@@ -31,6 +31,7 @@ namespace Phinx\Console\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Migrate extends AbstractCommand
 {
@@ -116,6 +117,19 @@ EOT
 
         $output->writeln('');
         $output->writeln('<comment>All Done. Took ' . sprintf('%.4fs', $end - $start) . '</comment>');
+
+        //Display any messages
+        $notifications = $this->getManager()->getNotifications();
+        if (!empty($notifications)) {
+            $io = new SymfonyStyle($input, $output);
+
+            $notify[] = "It is recommended you run the following seeders:";
+            foreach ($notifications['seeds'] as $msg) {
+                $notify[] = "phinx seed:run -s " . $msg;
+            }
+
+            $io->success($notify);
+        }
 
         return 0;
     }

@@ -69,6 +69,11 @@ class Manager
     protected $seeds;
 
     /**
+     * @var array
+     */
+    protected $notifications;
+
+    /**
      * @var integer
      */
     const EXIT_STATUS_DOWN = 1;
@@ -90,6 +95,8 @@ class Manager
         $this->setConfig($config);
         $this->setInput($input);
         $this->setOutput($output);
+
+        $this->notifications = array();
     }
 
     /**
@@ -114,7 +121,7 @@ class Manager
 
             $env = $this->getEnvironment($environment);
             $versions = $env->getVersionLog();
-            $maxNameLength = $versions ? max(array_map(function($version) {
+            $maxNameLength = $versions ? max(array_map(function ($version) {
                 return strlen($version['migration_name']);
             }, $versions)) : 0;
 
@@ -133,7 +140,7 @@ class Manager
                     $status, $migration->getVersion(), $version['start_time'], $version['end_time'], $migration->getName()
                 ));
 
-                if ($version && $version['breakpoint']){
+                if ($version && $version['breakpoint']) {
                     $output->writeln('         <error>BREAKPOINT SET</error>');
                 }
 
@@ -149,7 +156,7 @@ class Manager
                         $missing, $version['start_time'], $version['end_time'], str_pad($version['migration_name'], $maxNameLength, ' ')
                     ));
 
-                    if ($version && $version['breakpoint']){
+                    if ($version && $version['breakpoint']) {
                         $output->writeln('         <error>BREAKPOINT SET</error>');
                     }
                 }
@@ -179,7 +186,7 @@ class Manager
 
         if ($hasMissingMigration) {
             return self::EXIT_STATUS_MISSING;
-        } else if ($hasDownMigration) {
+        } elseif ($hasDownMigration) {
             return self::EXIT_STATUS_DOWN;
         } else {
             return 0;
@@ -199,7 +206,7 @@ class Manager
         $versions   = array_keys($this->getMigrations());
         $dateString = $dateTime->format('YmdHis');
 
-        $outstandingMigrations = array_filter($versions, function($version) use($dateString) {
+        $outstandingMigrations = array_filter($versions, function ($version) use ($dateString) {
             return $version <= $dateString;
         });
 
@@ -227,7 +234,7 @@ class Manager
         sort($versions);
 
         $earlierVersion = null;
-        $availableMigrations = array_filter($versions, function($version) use($dateString, &$earlierVersion) {
+        $availableMigrations = array_filter($versions, function ($version) use ($dateString, &$earlierVersion) {
             if ($version <= $dateString) {
                 $earlierVersion = $version;
             }
@@ -327,6 +334,10 @@ class Manager
         $this->getEnvironment($name)->executeMigration($migration, $direction);
         $end = microtime(true);
 
+        if ($direction == MigrationInterface::UP) {
+            $this->notifications = array_merge_recursive($this->notifications, $migration->getNotifications());
+        }
+
         $this->getOutput()->writeln(
             ' =='
             . ' <info>' . $migration->getVersion() . ' ' . $migration->getName() . ':</info>'
@@ -416,7 +427,7 @@ class Manager
             }
 
             if (in_array($migration->getVersion(), $versions)) {
-                if (isset($versionLog[$migration->getVersion()]) && 0 != $versionLog[$migration->getVersion()]['breakpoint'] && !$force){
+                if (isset($versionLog[$migration->getVersion()]) && 0 != $versionLog[$migration->getVersion()]['breakpoint'] && !$force) {
                     $this->getOutput()->writeln('<error>Breakpoint reached. Further rollbacks inhibited.</error>');
                     break;
                 }
@@ -718,7 +729,8 @@ class Manager
      * @param int $version
      * @return void
      */
-    public function toggleBreakpoint($environment, $version){
+    public function toggleBreakpoint($environment, $version)
+    {
         $migrations = $this->getMigrations();
         $this->getMigrations();
         $env = $this->getEnvironment($environment);
@@ -758,10 +770,21 @@ class Manager
      * @param string $environment
      * @return void
      */
-    public function removeBreakpoints($environment){
+    public function removeBreakpoints($environment)
+    {
         $this->getOutput()->writeln(sprintf(
             ' %d breakpoints cleared.',
             $this->getEnvironment($environment)->getAdapter()->resetAllBreakpoints()
         ));
+    }
+
+    /**
+     * Gets the notifications.
+     *
+     * @return array
+     */
+    public function getNotifications()
+    {
+        return $this->notifications;
     }
 }
