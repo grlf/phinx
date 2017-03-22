@@ -416,7 +416,20 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('varchar(255)', $rows[1]['Type']);
     }
 
-    public function testRenameColumn()
+    public function testAddStringColumnWithCustomCollation()
+    {
+        $table = new \Phinx\Db\Table('table_custom_collation', array('collation' => 'utf8_general_ci'), $this->adapter);
+        $table->save();
+        $this->assertFalse($table->hasColumn('string_collation_default'));
+        $this->assertFalse($table->hasColumn('string_collation_custom'));
+        $table->addColumn('string_collation_default', 'string', array())->save();
+        $table->addColumn('string_collation_custom', 'string', array('collation' => 'utf8mb4_unicode_ci'))->save();
+        $rows = $this->adapter->fetchAll('SHOW FULL COLUMNS FROM table_custom_collation');
+        $this->assertEquals('utf8_general_ci', $rows[1]['Collation']);
+        $this->assertEquals('utf8mb4_unicode_ci', $rows[2]['Collation']);
+    }
+
+public function testRenameColumn()
     {
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'string')
@@ -512,7 +525,7 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'text', array('limit' => MysqlAdapter::TEXT_LONG))
               ->save();
-        $columns = $table->getColumns('t');
+        $columns = $table->getColumns();
         $sqlType = $this->adapter->getSqlType($columns[1]->getType(), $columns[1]->getLimit());
         $this->assertEquals('longtext', $sqlType['name']);
     }
@@ -522,7 +535,7 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'text', array('limit' => MysqlAdapter::TEXT_MEDIUM))
               ->save();
-        $columns = $table->getColumns('t');
+        $columns = $table->getColumns();
         $sqlType = $this->adapter->getSqlType($columns[1]->getType(), $columns[1]->getLimit());
         $this->assertEquals('mediumtext', $sqlType['name']);
     }
@@ -532,7 +545,7 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'text', array('limit' => MysqlAdapter::TEXT_TINY))
               ->save();
-        $columns = $table->getColumns('t');
+        $columns = $table->getColumns();
         $sqlType = $this->adapter->getSqlType($columns[1]->getType(), $columns[1]->getLimit());
         $this->assertEquals('tinytext', $sqlType['name']);
     }
@@ -542,7 +555,7 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'integer', array('limit' => MysqlAdapter::INT_BIG))
               ->save();
-        $columns = $table->getColumns('t');
+        $columns = $table->getColumns();
         $sqlType = $this->adapter->getSqlType($columns[1]->getType(), $columns[1]->getLimit());
         $this->assertEquals('bigint', $sqlType['name']);
     }
@@ -552,7 +565,7 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'integer', array('limit' => MysqlAdapter::INT_MEDIUM))
               ->save();
-        $columns = $table->getColumns('t');
+        $columns = $table->getColumns();
         $sqlType = $this->adapter->getSqlType($columns[1]->getType(), $columns[1]->getLimit());
         $this->assertEquals('mediumint', $sqlType['name']);
     }
@@ -562,7 +575,7 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'integer', array('limit' => MysqlAdapter::INT_SMALL))
               ->save();
-        $columns = $table->getColumns('t');
+        $columns = $table->getColumns();
         $sqlType = $this->adapter->getSqlType($columns[1]->getType(), $columns[1]->getLimit());
         $this->assertEquals('smallint', $sqlType['name']);
     }
@@ -572,7 +585,7 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'integer', array('limit' => MysqlAdapter::INT_TINY))
               ->save();
-        $columns = $table->getColumns('t');
+        $columns = $table->getColumns();
         $sqlType = $this->adapter->getSqlType($columns[1]->getType(), $columns[1]->getLimit());
         $this->assertEquals('tinyint', $sqlType['name']);
     }
@@ -583,7 +596,7 @@ class MysqlAdapterTest extends \PHPUnit_Framework_TestCase
         $table = new \Phinx\Db\Table('t', array(), $this->adapter);
         $table->addColumn('column1', 'integer', array('limit' => $limit))
               ->save();
-        $columns = $table->getColumns('t');
+        $columns = $table->getColumns();
         $sqlType = $this->adapter->getSqlType($columns[1]->getType(), $columns[1]->getLimit());
         $this->assertEquals($limit, $sqlType['limit']);
     }

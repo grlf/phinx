@@ -232,7 +232,7 @@ abstract class AbstractMigration implements MigrationInterface
         if (is_string($table)) {
             $table = new Table($table, array(), $this->getAdapter());
         }
-        return $table->insert($data)->save();
+        $table->insert($data)->save();
     }
 
     /**

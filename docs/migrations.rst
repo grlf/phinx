@@ -10,6 +10,8 @@ your migrations using the Phinx PHP API, but raw SQL is also supported.
 
 Creating a New Migration
 ------------------------
+Generating a skeleton migration file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Let's start by creating a new Phinx migration. Run Phinx using the ``create``
 command:
@@ -19,8 +21,11 @@ command:
         $ php vendor/bin/phinx create MyNewMigration
 
 This will create a new migration in the format
-``YYYYMMDDHHMMSS_my_new_migration.php`` where the first 14 characters are
+``YYYYMMDDHHMMSS_my_new_migration.php``, where the first 14 characters are
 replaced with the current timestamp down to the second.
+
+If you have specified multiple migration paths, you will be asked to select
+which path to create the new migration in.
 
 Phinx automatically creates a skeleton migration file with a single method:
 
@@ -59,21 +64,18 @@ Phinx automatically creates a skeleton migration file with a single method:
             }
         }
 
-The AbstractMigration Class
----------------------------
-
 All Phinx migrations extend from the ``AbstractMigration`` class. This class
 provides the necessary support to create your database migrations. Database
-migrations can transform your database in many ways such as creating new
+migrations can transform your database in many ways, such as creating new
 tables, inserting rows, adding indexes and modifying columns.
 
 The Change Method
 ~~~~~~~~~~~~~~~~~
 
 Phinx 0.2.0 introduced a new feature called reversible migrations. This feature
-has now become the default migration method. With reversible migrations you only
-need to define the ``up`` logic and Phinx can figure out how to migrate down
-automatically for you. For example:
+has now become the default migration method. With reversible migrations, you
+only need to define the ``up`` logic, and Phinx can figure out how to migrate
+down automatically for you. For example:
 
 .. code-block:: php
 
@@ -117,9 +119,9 @@ automatically for you. For example:
             }
         }
 
-When executing this migration Phinx will create the ``user_logins`` table on
+When executing this migration, Phinx will create the ``user_logins`` table on
 the way up and automatically figure out how to drop the table on the way down.
-Please be aware that when a ``change`` method exists Phinx will automatically
+Please be aware that when a ``change`` method exists, Phinx will automatically
 ignore the ``up`` and ``down`` methods. If you need to use these methods it is
 recommended to create a separate migration file.
 
@@ -340,10 +342,10 @@ object.
 The Save Method
 ~~~~~~~~~~~~~~~
 
-When working with the Table object Phinx stores certain operations in a
+When working with the Table object, Phinx stores certain operations in a
 pending changes cache.
 
-When in doubt it is recommended you call this method. It will commit any
+When in doubt, it is recommended you call this method. It will commit any
 pending changes to the database.
 
 Creating a Table
@@ -400,7 +402,7 @@ The ``id`` option sets the name of the automatically created identity field, whi
 option selects the field or fields used for primary key. The ``primary_key`` option always defaults to
 the value of ``id``. Both can be disabled by setting them to false.
 
-To specify an alternate primary key you can specify the ``primary_key`` option
+To specify an alternate primary key, you can specify the ``primary_key`` option
 when accessing the Table object. Let's disable the automatic ``id`` column and
 create a primary key using two columns instead:
 
@@ -463,6 +465,16 @@ To simply change the name of the primary key, we need to override the default ``
 
             }
         }
+
+In addition, the MySQL adapter supports following options:
+
+========= ===========
+Option    Description
+========= ===========
+comment   set a text comment on the table
+engine    define table engine *(defaults to ``InnoDB``)*
+collation define table collation *(defaults to ``utf8_general_ci``)*
+========= ===========
 
 Valid Column Types
 ~~~~~~~~~~~~~~~~~~
@@ -711,6 +723,15 @@ Option   Description
 signed   enable or disable the ``unsigned`` option *(only applies to MySQL)*
 ======== ===========
 
+For ``string`` and ``text`` columns:
+
+========= ===========
+Option    Description
+========= ===========
+collation set collation that differs from table defaults *(only applies to MySQL)*
+encoding  set character set that differs from table defaults *(only applies to MySQL)*
+========= ===========
+
 For foreign key definitions:
 
 ====== ===========
@@ -850,7 +871,7 @@ You can check if a table already has a certain column by using the
 Renaming a Column
 ~~~~~~~~~~~~~~~~~
 
-To rename a column access an instance of the Table object then call the
+To rename a column, access an instance of the Table object then call the
 ``renameColumn()`` method.
 
 .. code-block:: php
@@ -1091,7 +1112,7 @@ call this method for each index.
             {
                 $table = $this->table('users');
                 $table->removeIndex(array('email'));
-                
+
                 // alternatively, you can delete an index by its name, ie:
                 $table->removeIndexByName('idx_users_email');
             }
@@ -1150,6 +1171,7 @@ Let's add a foreign key to an example table:
         }
 
 "On delete" and "On update" actions are defined with a 'delete' and 'update' options array. Possibles values are 'SET_NULL', 'NO_ACTION', 'CASCADE' and 'RESTRICT'.
+Constraint name can be changed with the 'constraint' option.
 
 It is also possible to pass ``addForeignKey()`` an array of columns.
 This allows us to establish a foreign key relationship to a table which uses a combined key.
@@ -1174,7 +1196,37 @@ This allows us to establish a foreign key relationship to a table which uses a c
                       ->addForeignKey(array('user_id', 'follower_id'),
                                       'followers',
                                       array('user_id', 'follower_id'),
-                                      array('delete'=> 'NO_ACTION', 'update'=> 'NO_ACTION'))
+                                      array('delete'=> 'NO_ACTION', 'update'=> 'NO_ACTION', 'constraint' => 'user_follower_id'))
+                      ->save();
+            }
+
+            /**
+             * Migrate Down.
+             */
+            public function down()
+            {
+
+            }
+        }
+
+We can add named foreign keys using the ``constraint`` parameter. This feature is supported as of Phinx version 0.6.5
+
+.. code-block:: php
+
+        <?php
+
+        use Phinx\Migration\AbstractMigration;
+
+        class MyNewMigration extends AbstractMigration
+        {
+            /**
+             * Migrate Up.
+             */
+            public function up()
+            {
+                $table = $this->table('your_table');
+                $table->addForeignKey('foreign_id', 'reference_table', array('id'), 
+                                    array('constraint'=>'your_foreign_key_name'));
                       ->save();
             }
 
@@ -1218,7 +1270,7 @@ We can also easily check if a foreign key exists:
             }
         }
 
-Finally to delete a foreign key use the ``dropForeignKey`` method.
+Finally, to delete a foreign key, use the ``dropForeignKey`` method.
 
 .. code-block:: php
 
