@@ -61,7 +61,8 @@ class PhinxApplication extends Application
             new Command\Test(),
             new Command\SeedCreate(),
             new Command\SeedRun(),
-            new Command\JoomlaInit()
+            new Command\JoomlaInit(),
+            new Command\Discover()
         ));
     }
 

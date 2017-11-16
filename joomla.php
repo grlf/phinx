@@ -6,8 +6,12 @@ $joom = new JConfig();
 
 return array(
     "paths" => array(
-        "migrations" => "%%PHINX_CONFIG_DIR%%/db/migrations",
-        "seeds" => "%%PHINX_CONFIG_DIR%%/db/seeds"
+        "migrations" => [
+            "%%PHINX_CONFIG_DIR%%/db/migrations"
+        ],
+        "seeds" => [
+            "%%PHINX_CONFIG_DIR%%/db/seeds"
+        ]
     ),
     "environments" => array(
         "default_migration_table" => "phinxlog",
