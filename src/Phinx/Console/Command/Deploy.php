@@ -21,7 +21,7 @@ class Deploy extends Command
 		        null,
 		        InputOption::VALUE_REQUIRED,
 		        'composer.json file to check for packages containing Phinx migrations',
-		        'composer.json'
+		        $_SERVER['COMPOSER']
 	        )
             ->setHelp(sprintf(
                 '%sUpdates the phinx paths using `discover` and the migrates.%s',
