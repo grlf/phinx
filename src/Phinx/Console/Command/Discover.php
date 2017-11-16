@@ -53,12 +53,12 @@ class Discover extends Command
 
         //Check for PHP config.
         if (!file_exists($this->phinx_config)) {
-            $this->output->writeln('<error>Phinx needs to have a configuration file in PHP format for this command.</error>');
+            $this->output->writeln("<error>Phinx needs to have a configuration file in PHP format for this command.</error>\n");
             return;
         }
 
         if (!file_exists($composer_file)) {
-            $this->output->writeln('<error>' . $composer_file . ' does not exist.</error>');
+            $this->output->writeln('<error>' . $composer_file . " does not exist.</error>\n");
             return;
         }
 
@@ -80,7 +80,7 @@ class Discover extends Command
 
         //Add to PHP config
         if (empty($migrations) && empty($seeds)) {
-            $this->output->writeln('<info>No phinx directories found to add.</info>');
+            $this->output->writeln("<info>No phinx directories found to add.</info>\n");
             return;
         }
 
@@ -98,7 +98,7 @@ class Discover extends Command
 	    $this->_updateConfig($migrations, 'migrations');
 	    $this->_updateConfig($seeds, 'seeds');
 
-	    $this->output->writeln('<info>Subdirectories imported.</info>');
+	    $this->output->writeln("<info>Subdirectories imported.</info>\n");
     }
 
 	/**
