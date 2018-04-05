@@ -45,9 +45,12 @@ class Deploy extends Command
 	    $command = $this->getApplication()->find('discover');
 
 	    $arguments = array(
-	    	'command' => 'discover',
-		    '--composer-file' => $input->getOption('composer-file')
+	    	'command' => 'discover'
 	    );
+	    
+	    if ($input->getOption('composer-file')) {
+	    	$arguments['--composer-file'] = $input->getOption('composer-file');
+	    }
 
 	    $commandInput = new ArrayInput($arguments);
 	    $returnCode = $command->run($commandInput, $output);
