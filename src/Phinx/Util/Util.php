@@ -215,4 +215,25 @@ class Util
     {
         return glob($path, defined('GLOB_BRACE') ? GLOB_BRACE : 0);
     }
+
+    /**
+     * This method initializes the Joomla Framework so you can use
+     * models and what not.
+     */
+    public static function initJoomlaFramework()
+    {
+        if (!defined('_JEXEC')) {
+            define('_JEXEC', 1);
+        }
+
+        if (!defined('JPATH_BASE')) {
+            define('JPATH_BASE', getcwd());
+        }
+        
+        chdir(getcwd());
+        require_once JPATH_BASE . '/includes/defines.php';
+        require_once JPATH_BASE . '/includes/framework.php';
+
+        JFactory::getApplication('cli');
+    }
 }
