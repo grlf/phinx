@@ -14,15 +14,19 @@ class Deploy extends Command
      */
     protected function configure()
     {
+        if (!isset($_SERVER['COMPOSER'])) {
+            $_SERVER['COMPOSER'] = 'composer.json';
+        }
+
         $this->setName('deploy')
             ->setDescription('Update Phinx paths and migrate')
-	        ->addOption(
-		        'composer-file',
-		        null,
-		        InputOption::VALUE_REQUIRED,
-		        'composer.json file to check for packages containing Phinx migrations',
-		        $_SERVER['COMPOSER']
-	        )
+            ->addOption(
+                'composer-file',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'composer.json file to check for packages containing Phinx migrations',
+                $_SERVER['COMPOSER']
+            )
             ->setHelp(sprintf(
                 '%sUpdates the phinx paths using `discover` and the migrates.%s',
                 PHP_EOL,
@@ -41,22 +45,21 @@ class Deploy extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-	    //$input->getOption('composer-file');
-	    $command = $this->getApplication()->find('discover');
+        //$input->getOption('composer-file');
+        $command = $this->getApplication()->find('discover');
 
-	    $arguments = array(
-	    	'command' => 'discover'
-	    );
-	    
-	    if ($input->getOption('composer-file')) {
-	    	$arguments['--composer-file'] = $input->getOption('composer-file');
-	    }
+        $arguments = array(
+            'command' => 'discover'
+        );
+        
+        if ($input->getOption('composer-file')) {
+            $arguments['--composer-file'] = $input->getOption('composer-file');
+        }
 
-	    $commandInput = new ArrayInput($arguments);
-	    $returnCode = $command->run($commandInput, $output);
+        $commandInput = new ArrayInput($arguments);
+        $returnCode = $command->run($commandInput, $output);
 
-	    $command = $this->getApplication()->find('migrate');
-	    $command->run(new ArrayInput(['command' => 'migrate']), $output);
-
+        $command = $this->getApplication()->find('migrate');
+        $command->run(new ArrayInput(['command' => 'migrate']), $output);
     }
 }
