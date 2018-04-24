@@ -219,6 +219,10 @@ class Util
     /**
      * This method initializes the Joomla Framework so you can use
      * models and what not.
+     *
+     * WARNING: This method starts up a Joomla connection.  DO NOT
+     * use both the Phinx "fetch" and Joomla at the same time as it causes
+     * locking issues.
      */
     public static function initJoomlaFramework()
     {
@@ -234,6 +238,7 @@ class Util
         require_once JPATH_BASE . '/includes/defines.php';
         require_once JPATH_BASE . '/includes/framework.php';
 
-        JFactory::getApplication('cli');
+        $_SERVER['HTTP_HOST'] = 'domain.com';
+        \JFactory::getApplication('administrator');
     }
 }
