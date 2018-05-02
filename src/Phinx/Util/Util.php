@@ -223,8 +223,11 @@ class Util
      * WARNING: This method starts up a Joomla connection.  DO NOT
      * use both the Phinx "fetch" and Joomla at the same time as it causes
      * locking issues.
+     *
+     * @param $user_id - Login as a user with this id.
+     *
      */
-    public static function initJoomlaFramework()
+    public static function initJoomlaFramework($user_id = null)
     {
         if (!defined('_JEXEC')) {
             define('_JEXEC', 1);
@@ -233,12 +236,20 @@ class Util
         if (!defined('JPATH_BASE')) {
             define('JPATH_BASE', getcwd());
         }
-        
+
         chdir(getcwd());
         require_once JPATH_BASE . '/includes/defines.php';
         require_once JPATH_BASE . '/includes/framework.php';
 
         $_SERVER['HTTP_HOST'] = 'domain.com';
+
+        if ($user_id) {
+        	try {
+        	    \Joomla\CMS\Factory::getSession()->set('user', \Joomla\CMS\User\User::getInstance($user_id));
+	        }catch (\Exception $e) {
+        		die(var_dump("Joomla CMS Factory problems in PHINX"));
+        	}
+        }
         \JFactory::getApplication('administrator');
     }
 }
