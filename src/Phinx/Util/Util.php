@@ -244,11 +244,11 @@ class Util
         $_SERVER['HTTP_HOST'] = 'domain.com';
 
         if ($user_id) {
-        	try {
-        	    \Joomla\CMS\Factory::getSession()->set('user', \Joomla\CMS\User\User::getInstance($user_id));
-	        }catch (\Exception $e) {
-        		die(var_dump("Joomla CMS Factory problems in PHINX"));
-        	}
+            try {
+                \Joomla\CMS\Factory::getSession()->set('user', \Joomla\CMS\User\User::getInstance($user_id));
+            }catch (\Exception $e) {
+                die(var_dump("Joomla CMS Factory problems in PHINX"));
+            }
         }
         \JFactory::getApplication('administrator');
     }
