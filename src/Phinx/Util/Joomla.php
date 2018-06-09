@@ -317,4 +317,20 @@ class Joomla
         $this->db->setQuery($query);
         $this->db->execute();
     }
+
+    /**
+     * Upgrading from versions prior to 3.7.0 seem to result the core admin menus
+     * not displaying.
+     *
+     * @since 3.7.0
+     */
+    public function fixMissingAdminMenu()
+    {
+        $query = $this->db->getQuery(true);
+        $query->update($this->db->qn('#__menu'))
+            ->set($this->db->qn('menutype') . '=' . $this->db->q('main'))
+            ->where($this->db->qn('menutype') . '=' . $this->db->q('menu'))
+            ->where($this->db->qn('client_id') . '=' . $this->db->q('1'));
+        $this->db->setQuery($query)->execute();
+    }
 }
