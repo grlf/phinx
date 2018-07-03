@@ -71,16 +71,23 @@ abstract class AbstractMigration implements MigrationInterface
     protected $notifications;
 
     /**
+     * @var Manager
+     * @since version
+     */
+    private $manager;
+
+    /**
      * Class Constructor.
      *
      * @param int $version Migration Version
      * @param InputInterface|null $input
      * @param OutputInterface|null $output
      */
-    final public function __construct($version, InputInterface $input = null, OutputInterface $output = null)
+    final public function __construct($version, InputInterface $input = null, OutputInterface $output = null, Manager $manager = null)
     {
         $this->version = $version;
-        $this->notifications = array();
+        $this->notifications = [];
+        $this->manager = $manager;
 
         if (!is_null($input)) {
             $this->setInput($input);
@@ -230,7 +237,7 @@ abstract class AbstractMigration implements MigrationInterface
     {
         // convert to table object
         if (is_string($table)) {
-            $table = new Table($table, array(), $this->getAdapter());
+            $table = new Table($table, [], $this->getAdapter());
         }
         $table->insert($data)->save();
     }
@@ -262,7 +269,7 @@ abstract class AbstractMigration implements MigrationInterface
     /**
      * {@inheritdoc}
      */
-    public function table($tableName, $options = array())
+    public function table($tableName, $options = [])
     {
         return new Table($tableName, $options, $this->getAdapter());
     }
@@ -306,5 +313,10 @@ abstract class AbstractMigration implements MigrationInterface
     public function getNotifications()
     {
         return $this->notifications;
+    }
+
+    public function runSeeder($seed)
+    {
+        $this->manager->seed($this->manager->getCurrentEnvironment(), $seed);
     }
 }
