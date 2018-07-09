@@ -105,6 +105,21 @@ Check out http://docs.phinx.org for the comprehensive documentation.
 Other translations include:
 
  * [Chinese](https://tsy12321.gitbooks.io/phinx-doc/) (Maintained by [@tsy12321](https://github.com/tsy12321/phinx-doc))
+ 
+### Fancy Styling
+
+If you need to use some advanced styling like confirm questions or warnings, you'll want to use [SymfonyStyle](https://symfony.com/doc/current/console/style.html)
+
+Example of confirm:
+
+```
+$io = new SymfonyStyle($this->input, $this->output);
+
+if (!$io->confirm("Are you sure?", false)) {
+    $io->warning("Nothing done.");
+    return;
+}
+```
 
 ## Contributing
 
